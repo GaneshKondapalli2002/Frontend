@@ -1,0 +1,28 @@
+  <table *ngIf="getdata">
+   <thead> <tr>
+      <th>id</th>
+      <th>title</th>
+      <th>price</th>
+      <th>Action</th>
+    </tr>
+</thead>
+<tbody>
+    <tr *ngFor="let product of getdata">
+      <td>{{ product.id }}</td>
+      <td>{{ product.title }}</td>
+      <td>{{ product.price }}</td>
+      <td><button (click)="delete(product.id)">Delete</button></td>
+    </tr>
+</tbody>
+  </table>
+  <button (click)="post()" class="button">Post</button>
+  <div *ngIf="postdata">
+    <p>Posted Data:</p>
+    <table>
+        <tr>
+    <td>ID:{{postdata.id}}</td>
+    <td>Title: {{postdata.title}}</td>
+    <td>Price: {{postdata.price}}</td>
+        </tr>
+</table>
+  </div>  

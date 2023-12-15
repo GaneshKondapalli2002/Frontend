@@ -1,0 +1,48 @@
+
+<router-outlet>
+
+</router-outlet>
+
+<!-- 
+
+ <h1>{{title}}--{{data}}--{{data1}}--{{data2}}--{{data3}}</h1>
+
+<input class="center" [(ngModel)]="data" />
+<input [(ngModel)]="data1" />
+<input [(ngModel)]="data2" />
+<input [(ngModel)]="data3" />
+
+
+<button class="btn btn-success"(click)="addData()">add</button>
+<button class="btn btn-dark" (click)="update()" >update</button>
+
+
+<table  class="center, table table-striped table-dark">
+  <thead >
+  <tr >
+    <th >UserName</th>
+    <th >Password</th>
+    <th >PhoneNumber</th>
+    <th >Subjects</th>
+    <th>Actions</th>
+  </tr>
+</thead>
+<tbody>
+  <tr *ngFor="let row of UserData; let i= index;">
+    <td >{{row.UserName}}</td>
+    <td>{{row.Password}}</td>
+    <td >{{row.PhoneNumber}}</td>
+    <td ><span *ngFor="let sub of row.Subjects">
+      {{sub+' Hello'}}---
+    </span></td>
+     <td><button type="button" class="btn btn-info" (click)="edit(row,i)">edit</button>
+     <button type="button" class="btn btn-danger" (click)="deleteRow(i)">Delete</button></td>
+     <!--<td> <button (click)="startEdit(row)" *ngIf="editingItemId !== row.addData">Edit</button>
+      <button (click)="saveEdit(row)" *ngIf="editingItemId === row.id">Save</button> -->
+
+   <!-- </tr>
+  </tbody>
+</table>  -->
+
+<!-- app.component.html -->
+
