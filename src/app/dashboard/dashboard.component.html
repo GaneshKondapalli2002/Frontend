@@ -1,0 +1,61 @@
+<form #form="ngForm">
+  <div class="user-list">
+    <h2 class="center">Users data</h2>
+      <table class="table table-striped">
+      <thead >
+      <tr>
+          <th scope="col">#</th>
+          <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Password</th>
+          <th scope="">Actions</th>
+        </tr>
+      </thead>    
+        <tbody>
+        <tr *ngFor="let user of users; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ user.firstname }}</td>
+          <td>{{ user.lastname }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.password }}</td>
+          <td>
+            <button class="btn btn-primary"  (click)="editUser(user)">Edit</button>
+            <button class="btn btn-danger" (click)="deleteUser(user._id)">Delete</button>
+          </td>    
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <section class="forms-section">
+    <div *ngIf="showForm" class="form-wrapper">
+      <div class="editForm">
+          <h3 class="center">Edit User</h3>
+        <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+          <div class="group">
+            <label for="firstname">First Name:</label>
+            <input type="text" id="firstname" formControlName="firstname" />
+          </div>
+          <div class="group">
+            <label for="lastname">Last Name:</label>
+            <input type="text" id="lastname" formControlName="lastname" />
+          </div>
+          <div class="group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" formControlName="email" />
+          </div>
+          <div class="group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" formControlName="password" />
+          </div>
+          <button type="submit" class="btn btn-success" (click)="update()">Update</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</form>
+
+
+  

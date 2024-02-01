@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
+import { ServiceService } from '../service.service';
+import { Router } from '@angular/router';
+import { response } from 'express';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login2',
@@ -8,62 +13,90 @@ import { HttpClient } from '@angular/common/http';
 })
 export class Login2Component {
 
-  public getdata: any;
-  public postdata: any;
-  public deledata:any;
-  activeForm: string = 'login';
+  emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  constructor(private http: HttpClient) {}
 
-  switchForm(form: string): void {
-    this.activeForm = form;
+  constructor(private http: HttpClient, private fb: FormBuilder, private router: Router, private service: ServiceService) { }
+
+  passwordValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const password = control.value;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasSpecialCharacter = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password);
+
+    if (!hasUppercase || !hasSpecialCharacter) {
+      return { 'passwordRequirements': true };
+    }
+
+    return null;
   }
 
-  ngOnInit(): void {
-    this.getData();
+  signinForm = this.fb.group({
+    firstname: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
+    lastname: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
+    email: ['', [Validators.required, Validators.pattern(this.emailRegex), Validators.minLength(5), Validators.maxLength(32)]],
+    password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(32), this.passwordValidator]],
+  });
+
+  generateVerificationLink(token: string): string {
+    return `http://localhost:5000/verify/${token}`;
   }
 
-  public getData() {
-    this.http.get("https://fakestoreapi.com/products?limit=5").subscribe((data) => {
-      console.log(data);
-      this.getdata = data;
+  async register() {
+    const bodyData = {
+      "firstname": this.signinForm.value.firstname,
+      "lastname": this.signinForm.value.lastname,
+      "email": this.signinForm.value.email,
+      "password": this.signinForm.value.password,
+    };
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
     });
-  }
-  public delete(productId: number): void {
-    var del = confirm("Do you want to delete?");
-    if (del) {
-      this.http.delete(`https://fakestoreapi.com/products/${productId}`).subscribe(
-        () => {
-          console.log(`Product with id ${productId} deleted successfully.`);
-          // Find the index of the item to delete
-          const index = this.getdata.findIndex((product: any) => product.id === productId);
-          // Remove the item from the array
-          if (index !== -1) {
-            this.getdata.splice(index, 1);
-          }
-        },
-        (error) => {
-          console.error(`Error deleting product with id ${productId}:`, error);
-          // Handle error, show error message, etc.
-        }
-      );
+    const options = { headers: headers };
+
+    try {
+      const resultData: any = await this.service.registerUser(bodyData).toPromise();
+
+      if (resultData.status === 'Success') {
+        // Registration was successful
+        const verificationLink = this.generateVerificationLink(resultData.verificationToken);
+        await this.sendVerificationEmail(this.signinForm.get('email')!.value, verificationLink);
+        Swal.fire('Registration Successful', 'Verification email sent. Check your email for instructions.', 'success');
+
+      } else if (resultData.status === 'Failed' && resultData.message === 'Email is already registered') {
+        // Email already exists
+        Swal.fire('Registration Failed', 'Email is already registered. Please use another email.', 'error');
+      } else {
+        Swal.fire('Registration Failed', 'Please try again later.', 'error');
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      Swal.fire('Error during registration. Please try again.', 'error');
     }
   }
 
-  public post() {
-    let body = {
-      id: 6,
-      title: 'sg bat',
-      price: 18.5,
-    };
+  async sendVerificationEmail(email: any, verificationLink: string) {
+    const options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
-    this.http.post('https://fakestoreapi.com/products', body).subscribe((data) => {
-      console.log(data);
-      this.postdata = data;
+    try {
+      await this.http.get(`http://localhost:5000/verify?token=${verificationLink}`, options).toPromise();
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+    }
+  }
 
-      if (this.getdata) {
-        this.getdata.push(data);
+
+  
+  async save() {
+    console.log('Form validity:', this.signinForm.valid);
+
+    if (this.signinForm.valid) {
+      try {
+        await this.register();
+        this.signinForm.reset();
+      } catch (error) {
+        console.error('Error during registration:', error);
       }
-    });
+    }
   }
 }

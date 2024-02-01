@@ -9,6 +9,10 @@ import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Login2Component } from './login2/login2.component';
 import { HttpClientModule } from '@angular/common/http';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { NavbarComponent } from './navbar/navbar.component';
+import { ServiceService } from './service.service';
+import { UserprofileComponent } from './userprofile/userprofile.component';
 
 const root:Routes =[
   {
@@ -24,6 +28,10 @@ const root:Routes =[
     AppComponent,
     LoginComponent,
     Login2Component,
+    DashboardComponent,
+    NavbarComponent,
+    UserprofileComponent,
+
    
   ],
   imports: [
@@ -34,7 +42,7 @@ const root:Routes =[
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [ServiceService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
