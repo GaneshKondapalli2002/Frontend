@@ -13,6 +13,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ServiceService } from './service.service';
 import { UserprofileComponent } from './userprofile/userprofile.component';
+import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
 
 const root:Routes =[
   {
@@ -31,6 +32,7 @@ const root:Routes =[
     DashboardComponent,
     NavbarComponent,
     UserprofileComponent,
+    OtpVerificationComponent,
 
    
   ],

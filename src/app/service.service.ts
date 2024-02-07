@@ -36,25 +36,31 @@ export class ServiceService {
     return this.http.post<any>(`${this.baseUrl}/login`, credentials);
   }
 
-  sendVerificationEmail(email: string, verificationLink: string): Observable<any> {
-    const body = { email, verificationLink };
+  sendVerificationEmail(email: string, otp: string): Observable<any> {
+    const body = { email, otp }; // Update the body to include OTP instead of verificationLink
     return this.http.post<any>(`${this.baseUrl}/send-verification-email`, body);
   }
-  verifyToken(token: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/verifyToken`, { token });
+
+  verifyOTP(email: string, otp: string) {
+    return this.http.post<any>(`${this.baseUrl}/verify-otp`, { email, otp });
   }
+
+  verifyToken(otp: string): Observable<any> {
+    const body = { otp }; // Update the body to include OTP
+    return this.http.post<any>(`${this.baseUrl}/verifyToken`, body);
+  }
+
   
   uploadPhoto(formData: FormData): Observable<any> {
     const headers = this.authService.getHeaders();
     return this.http.post<any>(`${this.baseUrl}/uploadPhoto`, formData, { headers });
   }
   
-  updateUserProfile(userId: string, formData: FormData): Observable<any> {
-    const headers = new HttpHeaders(); // You may need to set specific headers if required by your server
-
-    return this.http.post<any>(`${this.baseUrl}/updateProfile/${userId}`, formData, { headers })
-      .pipe(catchError(this.handleError));
+  updateUserProfile(userId: string, formData: FormData) {
+    return this.http.post<any>(`${this.baseUrl}/updateProfile/${userId}`, formData);
   }
+
+  
 
 
   private handleError(error: HttpErrorResponse) {

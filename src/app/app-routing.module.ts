@@ -4,6 +4,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { Login2Component } from './login2/login2.component';
 import { UserprofileComponent } from './userprofile/userprofile.component';
+import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
 
 const routes: Routes = [
   {
@@ -21,7 +22,8 @@ const routes: Routes = [
   {
     path:'updateProfile',
     component:UserprofileComponent
-  }
+  },
+  { path: 'otp-verification', component: OtpVerificationComponent },
 
 ];
 

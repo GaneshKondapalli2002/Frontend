@@ -1,0 +1,14 @@
+<div>
+    <h2>Enter OTP for {{ email }}</h2>
+    <form [formGroup]="otpForm" (ngSubmit)="verifyOTP()">
+      <div class="form-group">
+        <label>OTP</label>
+        <input type="text" formControlName="otp" class="form-control" placeholder="Enter OTP">
+        <div *ngIf="otpForm.get('otp')?.invalid && otpForm.get('otp')?.touched">
+          <small class="text-danger">OTP is required</small>
+        </div>
+      </div>
+      <button type="submit" [disabled]="otpForm.invalid" class="btn btn-primary">Verify OTP</button>
+    </form>
+  </div>
+  

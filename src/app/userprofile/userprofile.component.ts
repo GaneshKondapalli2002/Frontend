@@ -1,97 +1,82 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { ServiceService } from '../service.service';
 
 @Component({
   selector: 'app-userprofile',
   templateUrl: './userprofile.component.html',
-  styleUrls: ['./userprofile.component.scss'],
+  styleUrls: ['./userprofile.component.scss']
 })
 export class UserprofileComponent implements OnInit {
   profileData: any;
   selectedFile: File | null = null;
+  imgUrl: string | undefined;
+  showCardDetailsForm: boolean = false;
+  cardNumber: string | undefined;
+  cardHolderName: string | undefined;
+  expirationDate: string | undefined;
+  cvv: string | undefined;
 
-  constructor(private router: Router, private service: ServiceService) {}
+
+  constructor(private service: ServiceService) { }
 
   ngOnInit(): void {
-    let data: any = localStorage.getItem('user');
-    this.profileData = JSON.parse(data);
-    
+    this.loadUserProfile();
   }
 
-  // getUserProfile() {
-  //   this.service.getUserProfile().subscribe(
-  //     (data) => {
-  //       this.profileData = data;
-  //     },
-  //     (error) => {
-  //       console.error('Error fetching user profile:', error);
-  //     }
-  //   );
-  // }
+  loadUserProfile(): void {
+    const data: any = localStorage.getItem('user');
+    this.profileData = JSON.parse(data);
+    this.imgUrl = `http://localhost:5000/uploads/${this.profileData?.profileImage}`;
+  }
 
-  onFileSelected(event: any) {
+  onFileSelected(event: any): void {
     const file: File = event.target.files[0];
-  
+
     if (file) {
       this.selectedFile = file;
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.profileData.photoUrl = e.target.result;
-        this.uploadPhoto(file); // Trigger the file upload here
+        this.imgUrl = e.target.result;
       };
       reader.readAsDataURL(file);
     }
   }
-  
 
+  updateUserProfile(): void {
+    const userId = this.profileData._id;
 
-  uploadPhoto(file: File): void {
     const formData = new FormData();
-    formData.append('file', file);
-  
-    this.service.uploadPhoto(formData).subscribe(
+    formData.append('firstname', this.profileData.firstname);
+    formData.append('lastname', this.profileData.lastname);
+    formData.append('email', this.profileData.email);
+
+    if (this.selectedFile) {
+      formData.append('file', this.selectedFile);
+    }
+
+    formData.append('cardNumber', this.cardNumber || '');
+  formData.append('cardHolderName', this.cardHolderName || '');
+  formData.append('expirationDate', this.expirationDate || '');
+  formData.append('cvv', this.cvv || '');
+
+    this.service.updateUserProfile(userId, formData).subscribe(
       (response) => {
-        // Handle successful response
+        console.log('Profile updated successfully:', response);
+
+        
+        this.loadUserProfile();
       },
       (error) => {
-        console.error('Error uploading profile picture:', error);
-        // Handle error, display a user-friendly message, etc.
+        console.error('Error updating profile:', error);
       }
     );
   }
+  toggleCardDetailsForm(): void {
+    this.showCardDetailsForm = !this.showCardDetailsForm;
+  }
   
-  updateUserProfile() {
-    const user = {
-        firstname: this.profileData.firstname,
-        lastname: this.profileData.lastname,
-        email: this.profileData.email
-    };
-
-    const formData = new FormData();
-    
-    if (this.selectedFile) {
-        formData.append('file', this.selectedFile);
-    }
-
-    formData.append('user', JSON.stringify(user));
-
-    this.service.updateUserProfile(this.profileData._id, formData).subscribe(
-        (response) => {
-            console.log('Profile updated successfully:', response);
-            this.profileData.photoUrl = response.user.photoUrl;
-            // Optionally, update other properties if needed
-        },
-        (error) => {
-            console.error('Error updating profile:', error);
-            alert('Error updating profile. Please try again.');
-        }
-    );
 }
 
-
-
-}
 
 
 // import { Component, OnInit } from '@angular/core';
@@ -106,88 +91,86 @@ export class UserprofileComponent implements OnInit {
 // export class UserprofileComponent implements OnInit {
 //   profileData: any;
 //   selectedFile: File | null = null;
+//   imgUrl: any;
 
 //   constructor(private router: Router, private service: ServiceService) {}
 
 //   ngOnInit(): void {
-//     let data: any = localStorage.getItem('user');
+//     this.loadUserProfile();
+//   }
+
+//   loadUserProfile(): void {
+//     const data: any = localStorage.getItem('user');
 //     this.profileData = JSON.parse(data);
-//     this.getUserProfile();
+//     this.imgUrl = `http://localhost:5000/uploads/${this.profileData?.profileImage}`;
 //   }
 
-//   getUserProfile() {
-//     this.service.getUserProfile().subscribe(
-//       (data) => {
-//         this.profileData = data;
-//       },
-//       (error) => {
-//         console.error('Error fetching user profile:', error);
-//       }
-//     );
-//   }
-
-//   onFileSelected(event: any) {
+//   onFileSelected(event: any): void {
 //     const file: File = event.target.files[0];
 
 //     if (file) {
 //       this.selectedFile = file;
 //       const reader = new FileReader();
 //       reader.onload = (e: any) => {
-//         this.profileData.photoUrl = e.target.result;
+//         this.imgUrl = e.target.result;
+//         this.uploadPhoto(file);
 //       };
 //       reader.readAsDataURL(file);
-
-//       // Automatically upload the photo here
-//       this.uploadPhoto();
 //     }
 //   }
 
-//   uploadPhoto() {
-//     if (this.selectedFile) {
-//       const formData = new FormData();
-//       formData.append('file', this.selectedFile);
-
-//       // Step 1: Upload photo
-//       this.service.uploadPhoto(formData).subscribe(
-//         (photoResponse) => {
-//           console.log('Photo uploaded successfully:', photoResponse);
-
-//           // Update user's photo URL in your local storage or wherever needed
-//           this.profileData.photoUrl = photoResponse.photoUrl;
-
-//           // Step 2: After uploading photo, update the user profile
-//           this.updateUserProfile();
-//         },
-//         (photoError) => {
-//           console.error('Error uploading photo:', photoError);
-//         }
-//       );
-//     }
-//     // No else condition here as the photo will be automatically uploaded on file selection
-//   }
-
-//   updateUserProfile() {
+//   uploadPhoto(file: File): void {
 //     const formData = new FormData();
+//     formData.append('file', file);
+
+//     this.service.uploadPhoto(formData).subscribe(
+//       (response) => {
+//         console.log('Photo uploaded successfully:', response);
+
+//         // Update user's profile image in localStorage or wherever needed
+//         this.profileData.profileImage = response.photoUrl;
+
+//         // Update user's profile image in MongoDB (if necessary)
+//         this.updateUserProfile();
+//       },
+//       (error) => {
+//         console.error('Error uploading profile picture:', error);
+//       }
+//     );
+//   }
+
+  
+//   updateUserProfile(): void {
+//     const userId = this.profileData._id;
+  
+//     const formData = new FormData();
+  
+//     // Append user data to formData
 //     formData.append('firstname', this.profileData.firstname);
 //     formData.append('lastname', this.profileData.lastname);
-
+//     formData.append('email', this.profileData.email);
+  
 //     // Check if a file is selected before appending to FormData
 //     if (this.selectedFile) {
 //       formData.append('file', this.selectedFile);
 //     }
-
-//     // Step 3: Update user profile
-//     this.service.updateUserProfile(formData).subscribe(
+  
+//     this.service.updateUserProfile(userId, formData).subscribe(
 //       (response) => {
 //         console.log('Profile updated successfully:', response);
-//         // Handle the response as needed
+  
+//         // Optionally, update other properties if needed
+  
+//         // Reload user profile to display the updated image
+//         this.loadUserProfile();
 //       },
 //       (error) => {
 //         console.error('Error updating profile:', error);
-//         // Handle the error
 //       }
 //     );
 //   }
+  
+  
 // }
 
 

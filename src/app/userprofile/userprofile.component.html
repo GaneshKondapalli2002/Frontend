@@ -1,16 +1,9 @@
-
-<!-- <div *ngIf="profileData">
-  <h2>User Profile</h2>
-  <p><strong>Name:</strong> {{ profileData.firstname }} {{ profileData.lastname }}</p>
-  <p><strong>Email:</strong> {{ profileData.email }}</p>
- <button><a class="dropdown-item" (click)="logout()">Logout</a></button>  -->
- <div class="container rounded bg-white mt-5 mb-5">
+<div class="container rounded bg-white mt-5 mb-5">
   <div class="row">
     <div class="col-md-3 border-right">
       <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-        <!-- Replace with Angular bindings -->
-        <img class="rounded-circle mt-5" width="150px"  [src]="profileData.photoUrl || 'https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg'">
- 
+        <img class="rounded-circle mt-5" width="150px" [src]="imgUrl">
+
         <span class="font-weight-bold">{{ profileData.firstname }} {{ profileData.lastname }}</span>
         <span class="text-black-50">{{ profileData.email }}</span>
 
@@ -21,8 +14,8 @@
             </div>
           </label>
           <input type="file" name="file" id="fileInput" style="display: none;" (change)="onFileSelected($event)">
+          <button (click)="updateUserProfile()">Update Profile</button>
         </div>
-        
       </div>
     </div>
 
@@ -32,7 +25,71 @@
           <h4 class="text-right">Profile Settings</h4>
         </div>
 
-        <!-- Replace with Angular bindings and ngModel for two-way data binding -->
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <label class="labels">Name</label>
+            <input type="text" class="form-control" placeholder="First Name" [(ngModel)]="profileData.firstname">
+          </div>
+          <div class="col-md-6">
+            <label class="labels">Surname</label>
+            <input type="text" class="form-control" placeholder="Surname" [(ngModel)]="profileData.lastname">
+          </div>
+          <div class="col-md-6">
+            <label class="labels">E-mail</label>
+            <input type="text" class="form-control" placeholder="Email" [(ngModel)]="profileData.email">
+          </div>
+          <button (click)="toggleCardDetailsForm()">Add Card Details</button>
+          <form *ngIf="showCardDetailsForm">
+            <input type="text" [(ngModel)]="cardNumber" name="cardNumber" placeholder="Card Number">
+            <input type="text" [(ngModel)]="cardHolderName" name="cardHolderName" placeholder="Card Holder Name">
+            <input type="text" [(ngModel)]="expirationDate" name="expirationDate" placeholder="Expiration Date">
+            <input type="text" [(ngModel)]="cvv" name="cvv" placeholder="CVV">
+            <button (click)="updateUserProfile()">Save</button>
+          </form>          
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+ 
+<!-- <div *ngIf="profileData">
+  <h2>User Profile</h2>
+  <p><strong>Name:</strong> {{ profileData.firstname }} {{ profileData.lastname }}</p>
+  <p><strong>Email:</strong> {{ profileData.email }}</p>
+ <button><a class="dropdown-item" (click)="logout()">Logout</a></button>  -->
+<!--
+ <div class="container rounded bg-white mt-5 mb-5">
+  <div class="row">
+    <div class="col-md-3 border-right">
+      <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+    
+        <img class="rounded-circle mt-5" width="150px" [src]="imgUrl || 'https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg'">
+
+        <span class="font-weight-bold">{{ profileData.firstname }} {{ profileData.lastname }}</span>
+        <span class="text-black-50">{{ profileData.email }}</span>
+
+        <div class="mt-2">
+          <label class="labels" for="fileInput">
+            <div class="custom-file-upload">
+              <i class="bi bi-card-image"></i> Add Photo
+            </div>
+          </label>
+          <input type="file" name="file" id="fileInput" style="display: none;" (change)="onFileSelected($event)">
+          <button (click)="updateUserProfile()">Update Profile</button>
+        </div>
+         
+      </div>
+    </div>
+
+    <div class="col-md-5 border-right">
+      <div class="p-3 py-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="text-right">Profile Settings</h4>
+        </div>
+
         <div class="row mt-2">
           <div class="col-md-6">
             <label class="labels">Name</label>
@@ -47,11 +104,9 @@
             <input type="text" class="form-control" placeholder="Email" [(ngModel)]="profileData.email">
           </div>
         </div>
-        <div class="mt-3">
-      <button (click)="updateUserProfile()">Update Profile</button>
-        </div>
+        
   
       </div>
     </div>
   </div>
-</div>
+</div> -->
