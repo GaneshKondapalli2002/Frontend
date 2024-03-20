@@ -46,7 +46,9 @@ export class LoginComponent {
     this.router.navigate(['/profile']);
   }
 
-
+  register() {
+    this.router.navigate(['/register'])
+  }
 
   activeForm: string = 'login';
 }
