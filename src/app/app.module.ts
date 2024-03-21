@@ -8,16 +8,17 @@ import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Login2Component } from './login2/login2.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ServiceService } from './service.service';
 import { UserprofileComponent } from './userprofile/userprofile.component';
 import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
+import { SessionInterceptor } from './session.interceptor';
 
 const root:Routes =[
   {
-    path:'', component:LoginComponent
+    path:'login', component:LoginComponent
 },
 {
   path:'login2', component:Login2Component
@@ -44,7 +45,9 @@ const root:Routes =[
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [ServiceService],
+  providers: [ServiceService,
+    { provide: HTTP_INTERCEPTORS, useClass: SessionInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

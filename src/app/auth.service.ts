@@ -1,50 +1,70 @@
+// auth.service.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject} from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = 'http://localhost:5000';
-  private user: any = null;
-  
+  private sessionTimer: any;
+  private sessionExpired = new Subject<void>();
 
-  constructor(private http: HttpClient, private router:Router) { }
+  constructor(private http: HttpClient, private router: Router) {}
 
   login(credentials: any): Observable<any> {
-  return this.http.post(`${this.apiUrl}/login`, credentials)
-    .pipe(
-      tap((response: any) => {
-        // set token expiry
-        if (response && response.token) {
-          const expiresIn = 60 * 1000; // 1min expiry
-          const expirationTime = new Date().getTime() + expiresIn;
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('tokenExpiration', expirationTime.toString());
-        }
-      })
-    );
-}
-saveToken(token: string): void {
-  localStorage.setItem('token', token);
-}
+    return this.http.post(`${this.apiUrl}/login`, credentials)
+      .pipe(
+        tap((response: any) => {
+          // set token expiry
+          if (response && response.token) {
+            const expiresIn = 15 * 60 * 1000; // 1min expiry
+            const expirationTime = new Date().getTime() + expiresIn;
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('tokenExpiration', expirationTime.toString());
+            this.startSessionTimer();
+          }
+        })
+      );
+  }
 
-saveUser(user: any): void {
-  localStorage.setItem('user', JSON.stringify(user));
-}
+  private startSessionTimer(): void {
+    const expirationTime = parseInt(localStorage.getItem('tokenExpiration') || '0', 10);
+    const currentTime = new Date().getTime();
+    const timeoutDuration = expirationTime - currentTime;
 
-getData():Observable<any> {
-  const headers = this.getHeaders();
-  return this.http.get(`${this.apiUrl}/getData`, {headers});
-}
+    if (timeoutDuration > 0) {
+      this.sessionTimer = setTimeout(() => {
+        this.logout();
+        alert('Your session has expired. Please log in again.');
+      }, timeoutDuration);
+    }
+  }
+
+  private clearSessionTimer(): void {
+    clearTimeout(this.sessionTimer);
+  }
+
+  saveToken(token: string): void {
+    localStorage.setItem('token', token);
+  }
+
+  saveUser(user: any): void {
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  getData(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get(`${this.apiUrl}/getData`, { headers });
+  }
 
   isLoggedIn(): boolean {
-    if( !!localStorage.getItem('token')) {
-      if(this.isTokenNotExpired()){
+    if (!!localStorage.getItem('token')) {
+      if (this.isTokenNotExpired()) {
         return true;
       } else {
         this.logout();
@@ -79,38 +99,20 @@ getData():Observable<any> {
   getHeaders(): HttpHeaders {
     const token = this.getToken();
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
   }
-  getUserEmail():Observable<any> {
+
+  getUserEmail(): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.get(`${this.apiUrl}/profile`, {headers});
+    return this.http.get(`${this.apiUrl}/profile`, { headers });
   }
-
-
-  // getSecureData(): Observable<any>{
-  //   const headers = this.getHeaders();
-  //   return this.http.get(`${this.apiUrl}/getData`, {headers});
-  // }
 
   logout(): void {
     // Clear token and expiration time on logout
     localStorage.removeItem('token');
     localStorage.removeItem('tokenExpiration');
     localStorage.removeItem('user');
-    
-    setTimeout(() => {
-      this.router.navigate(['']);
-    }, 1000);
-  
+    this.router.navigate(['/login']);
+    this.clearSessionTimer();
+
   }
-  
-  
-
-  
-  // private showTokenExpiredAlert(): void {
-  //   // You can use a library like SweetAlert or the built-in alert
-  //   alert('Token has expired. Please log in again.');
-  //   this.router.navigate(['/login']);
-
-  // }
 }

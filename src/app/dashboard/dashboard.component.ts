@@ -34,7 +34,7 @@ export class DashboardComponent implements OnInit {
 
   fetchUsers() {
     console.log('Fetching users...');
-    this.service.getData().subscribe(
+    this.authService.getData().subscribe(
       (data) => {
         console.log('Data received:', data);
         this.users = data;
@@ -42,10 +42,32 @@ export class DashboardComponent implements OnInit {
       },
       (err) => {
         console.error('Error fetching data:', err);
-        // Handle error
+        if (err.status === 401) {
+          console.log('Unauthorized access. Token may be invalid or expired.');
+          this.authService.logout(); // Logout on unauthorized access
+          this.router.navigate(['/login']); // Navigate to login page
+        } else if (err.status === 403) {
+          console.log('Forbidden. Token has expired.');
+          this.authService.logout(); // Logout on token expiration
+          this.router.navigate(['/login']); // Navigate to login page
+        }
       }
     );
   }
+  // fetchUsers() {
+  //   console.log('Fetching users...');
+  //   this.service.getData().subscribe(
+  //     (data) => {
+  //       console.log('Data received:', data);
+  //       this.users = data;
+  //       console.log('Users data fetched successfully:', this.users);
+  //     },
+  //     (err) => {
+  //       console.error('Error fetching data:', err);
+  //       // Handle error
+  //     }
+  //   );
+  // }
   
 
   // fetchUsers() {

@@ -118,8 +118,10 @@
 	}
 	.forms {
 		display: flex;
-		align-items: flex-start;
-		margin-top: 30px;
+    align-items: center; 
+    justify-content: center; 
+    flex-direction: column; 
+    margin-top: 30px;
 	}
 
 	.form-wrapper {

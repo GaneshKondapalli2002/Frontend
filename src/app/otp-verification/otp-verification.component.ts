@@ -32,7 +32,7 @@ export class OtpVerificationComponent implements OnInit  {
       (response: any) => {
         console.log('OTP Verified Successfully');
        Swal.fire('OTP Verified Successfully', 'success')
-        this.router.navigate([''])
+        this.router.navigate(['/login'])
       },
       (error: any) => {
         console.error('Error verifying OTP:', error);
