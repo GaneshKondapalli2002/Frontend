@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ServiceService } from '../service.service';
-
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-otp-verification',
@@ -13,7 +13,7 @@ export class OtpVerificationComponent implements OnInit  {
   email: string = '';
   otpForm: FormGroup;
 
-  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private service: ServiceService) {
+  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private service: ServiceService, ) {
     this.otpForm = this.fb.group({
       otp: ['', Validators.required]
     });
@@ -31,7 +31,8 @@ export class OtpVerificationComponent implements OnInit  {
     this.service.verifyOTP(this.email, otp).subscribe(
       (response: any) => {
         console.log('OTP Verified Successfully');
-        // Redirect or perform further actions upon successful verification
+       Swal.fire('OTP Verified Successfully', 'success')
+        this.router.navigate([''])
       },
       (error: any) => {
         console.error('Error verifying OTP:', error);
