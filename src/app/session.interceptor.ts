@@ -12,16 +12,17 @@
   import { Router } from '@angular/router';
   import { SessionExpiryModalComponent } from './session-expiry-modal/session-expiry-modal.component';
   import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-  
+
   @Injectable()
   export class SessionInterceptor implements HttpInterceptor {
+    private sessionExpiryTime: number = 0; // Initialize session expiry time
 
-    constructor(private router: Router) {}
-
+    constructor(private router: Router, private modalService: NgbModal) {}
+  
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
       // Clone the request to add a timeout
       const clonedRequest = request.clone();
-
+  
       // Continue with the request and add a timeout
       return next.handle(clonedRequest).pipe(
         timeout(1200000), // Timeout of 120 seconds
@@ -41,23 +42,30 @@
         })
       );
     }
-
+  
     private handleUnauthorizedRequest(): void {
-      alert('Your session has expired. Please log in again.');
+      // Open session expiry modal
+      this.modalService.open(SessionExpiryModalComponent);
       // Clear token and expiration time on logout
       localStorage.removeItem('token');
       localStorage.removeItem('tokenExpiration');
       localStorage.removeItem('user');
-      // Display alert for expired token
-
       // Redirect to login page
       this.router.navigate(['/login']);
     }
-
+  
     private handleTimeout(): void {
-      // Redirect to login page or any other handling
-      this.router.navigate(['/login']);
-      // Display alert for timeout
-     alert('Request timed out. Please try again.');
+      // Check if remaining session expiry time is less than 10 seconds
+      if (this.sessionExpiryTime - Date.now() < 10000) {
+        // Open session expiry modal
+        this.modalService.open(SessionExpiryModalComponent);
+        // Redirect to login page or any other handling
+        this.router.navigate(['/login']);
+      }
+    }
+  
+    // Method to set session expiry time
+    setSessionExpiryTime(expiryTime: number): void {
+      this.sessionExpiryTime = expiryTime;
     }
   }
