@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 export class AuthService {
   private apiUrl = 'http://localhost:5000';
   private sessionTimer: any;
-  private sessionExpired = new Subject<void>();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -20,9 +19,8 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, credentials)
       .pipe(
         tap((response: any) => {
-          // set token expiry
           if (response && response.token) {
-            const expiresIn = 15 * 60 * 1000; // 1min expiry
+            const expiresIn = 120 * 1000; // 2 minutes
             const expirationTime = new Date().getTime() + expiresIn;
             localStorage.setItem('token', response.token);
             localStorage.setItem('tokenExpiration', expirationTime.toString());
@@ -31,7 +29,7 @@ export class AuthService {
         })
       );
   }
-
+  
   private startSessionTimer(): void {
     const expirationTime = parseInt(localStorage.getItem('tokenExpiration') || '0', 10);
     const currentTime = new Date().getTime();

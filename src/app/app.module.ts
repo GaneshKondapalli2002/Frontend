@@ -15,6 +15,9 @@ import { ServiceService } from './service.service';
 import { UserprofileComponent } from './userprofile/userprofile.component';
 import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
 import { SessionInterceptor } from './session.interceptor';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SessionExpiryModalComponent } from './session-expiry-modal/session-expiry-modal.component';
+
 
 const root:Routes =[
   {
@@ -34,16 +37,16 @@ const root:Routes =[
     NavbarComponent,
     UserprofileComponent,
     OtpVerificationComponent,
-
-   
-  ],
+    SessionExpiryModalComponent,
+   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     RouterModule.forRoot(root),
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule
   ],
   providers: [ServiceService,
     { provide: HTTP_INTERCEPTORS, useClass: SessionInterceptor, multi: true }

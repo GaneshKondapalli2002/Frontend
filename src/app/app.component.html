@@ -5,6 +5,16 @@
 
 <!-- 
 
+<div class="container">
+  <router-outlet></router-outlet> 
+  <div *ngIf="showPopup" class="session-expiry-popup">
+    <h2>Your session will expire in {{ countdown }} seconds</h2>
+    <button (click)="logout()">Logout</button>
+  </div>
+</div> -->
+
+<!-- 
+
  <h1>{{title}}--{{data}}--{{data1}}--{{data2}}--{{data3}}</h1>
 
 <input class="center" [(ngModel)]="data" />
